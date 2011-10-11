@@ -10,18 +10,23 @@ import (
 
 // macAddr form 12:34:56:78:9a:bc
 func SendMagicPacket(macAddr string, bcastAddr string) os.Error {
+
+    if (len(macAddr) != (6 * 2 + 5)) {
+        return os.NewError("Invalid MAC Address String: " + macAddr);
+    }
+
     packet, err := constructMagicPacket(macAddr)
-    if err != nil { return err; }
+    if err != nil {
+        return err
+    }
 
     a, err := net.ResolveUDPAddr("udp", bcastAddr + ":7")
     if err != nil {
-        //log.Fatalln("Error, Invalid UDP Addr:", err)
         return err
     }
 
     c, err := net.DialUDP("udp", nil, a)
     if err != nil {
-        //log.Fatalln("Error creating UDP:", err)
         return err
     }
 
@@ -30,9 +35,10 @@ func SendMagicPacket(macAddr string, bcastAddr string) os.Error {
 
     // Packet must be 102 bytes in length
     if written != 102 {
-        //?
+        return err
     }
-    return err
+
+    return nil
 }
 
 func constructMagicPacket(macAddr string) ([]byte, os.Error) {
