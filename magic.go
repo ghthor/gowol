@@ -2,17 +2,17 @@ package wol
 
 import (
 	"encoding/hex"
+	"errors"
 	"log"
 	"net"
-	"os"
 	"strings"
 )
 
 // macAddr form 12:34:56:78:9a:bc
-func SendMagicPacket(macAddr string, bcastAddr string) os.Error {
+func SendMagicPacket(macAddr string, bcastAddr string) error {
 
 	if len(macAddr) != (6*2 + 5) {
-		return os.NewError("Invalid MAC Address String: " + macAddr)
+		return errors.New("Invalid MAC Address String: " + macAddr)
 	}
 
 	packet, err := constructMagicPacket(macAddr)
@@ -41,7 +41,7 @@ func SendMagicPacket(macAddr string, bcastAddr string) os.Error {
 	return nil
 }
 
-func constructMagicPacket(macAddr string) ([]byte, os.Error) {
+func constructMagicPacket(macAddr string) ([]byte, error) {
 	macBytes, err := hex.DecodeString(strings.Join(strings.Split(macAddr, ":"), ""))
 	if err != nil {
 		log.Fatalln("Error Hex Decoding:", err)
