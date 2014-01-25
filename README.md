@@ -3,5 +3,4 @@ gowol
 
 Wake-on-LAN package for Golang
 
-I wrote this a long time ago. One of the first things I wrote in go.
-It needs revisted, spec'ed out, and cleaned up.
+I cleaned it up so it actually makes sense as a package with a type. It still needs specifications.
