@@ -3,7 +3,6 @@ package wol
 import (
 	"encoding/hex"
 	"errors"
-	"log"
 	"net"
 	"strings"
 )
@@ -44,7 +43,6 @@ func SendMagicPacket(macAddr string, bcastAddr string) error {
 func constructMagicPacket(macAddr string) ([]byte, error) {
 	macBytes, err := hex.DecodeString(strings.Join(strings.Split(macAddr, ":"), ""))
 	if err != nil {
-		log.Fatalln("Error Hex Decoding:", err)
 		return nil, err
 	}
 
@@ -52,5 +50,6 @@ func constructMagicPacket(macAddr string) ([]byte, error) {
 	for i := 0; i < 16; i++ {
 		b = append(b, macBytes...)
 	}
-	return b, err
+
+	return b, nil
 }
