@@ -7,40 +7,15 @@ import (
 	"strings"
 )
 
+type MagicPacket []byte
+
+// Use a MAC address to form a magic packet
 // macAddr form 12:34:56:78:9a:bc
-func SendMagicPacket(macAddr string, bcastAddr string) error {
-
+func NewMagicPacket(macAddr string) (MagicPacket, error) {
 	if len(macAddr) != (6*2 + 5) {
-		return errors.New("Invalid MAC Address String: " + macAddr)
+		return nil, errors.New("Invalid MAC Address String: " + macAddr)
 	}
 
-	packet, err := constructMagicPacket(macAddr)
-	if err != nil {
-		return err
-	}
-
-	a, err := net.ResolveUDPAddr("udp", bcastAddr+":7")
-	if err != nil {
-		return err
-	}
-
-	c, err := net.DialUDP("udp", nil, a)
-	if err != nil {
-		return err
-	}
-
-	written, err := c.Write(packet)
-	c.Close()
-
-	// Packet must be 102 bytes in length
-	if written != 102 {
-		return err
-	}
-
-	return nil
-}
-
-func constructMagicPacket(macAddr string) ([]byte, error) {
 	macBytes, err := hex.DecodeString(strings.Join(strings.Split(macAddr, ":"), ""))
 	if err != nil {
 		return nil, err
@@ -51,5 +26,38 @@ func constructMagicPacket(macAddr string) ([]byte, error) {
 		b = append(b, macBytes...)
 	}
 
-	return b, nil
+	return MagicPacket(b), nil
+}
+
+// Send a Magic Packet to an broadcast class IP address via UDP
+func (p MagicPacket) Send(bcastAddr string) error {
+	a, err := net.ResolveUDPAddr("udp", bcastAddr+":7")
+	if err != nil {
+		return err
+	}
+
+	c, err := net.DialUDP("udp", nil, a)
+	if err != nil {
+		return err
+	}
+
+	written, err := c.Write(p)
+	c.Close()
+
+	// Packet must be 102 bytes in length
+	if written != 102 {
+		return err
+	}
+
+	return nil
+}
+
+// Constructs a packet and Sends it
+func MagicWake(macAddr string, bcastAddr string) error {
+	packet, err := NewMagicPacket(macAddr)
+	if err != nil {
+		return err
+	}
+
+	return packet.Send(bcastAddr)
 }
