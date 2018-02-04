@@ -31,7 +31,7 @@ func NewMagicPacket(macAddr string) (MagicPacket, error) {
 
 // Send a Magic Packet to an broadcast class IP address via UDP
 func (p MagicPacket) Send(bcastAddr string) error {
-	a, err := net.ResolveUDPAddr("udp", bcastAddr+":7")
+	a, err := net.ResolveUDPAddr("udp", net.JoinHostPort(bcastAddr, "7"))
 	if err != nil {
 		return err
 	}
