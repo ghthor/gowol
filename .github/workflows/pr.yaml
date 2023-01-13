@@ -11,6 +11,9 @@ on:
         description: 'Branch to run chk againist'
         default: master
 
+env:
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+
 jobs:
   chk:
     concurrency:
