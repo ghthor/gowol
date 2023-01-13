@@ -1,0 +1,22 @@
+name: main
+on:
+  push:
+    branches:
+    # - some/pr/branch/for/testing
+    - main
+
+jobs:
+  mainchk:
+    concurrency:
+      group:  ${{ github.workflow }}-${{ github.event.branch }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      if: ${{ always() }}
+      uses: actions/checkout@v3
+
+    - name: check code
+      if: ${{ always() }}
+      run: |
+        set -x
