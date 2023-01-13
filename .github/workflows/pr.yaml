@@ -1,15 +1,20 @@
-name: main
+name: chk
 on:
-  push:
-    branches:
-    # - some/pr/branch/for/testing
-    - main
-    - master
+  # this won't trigger on merge conflicts.
+  pull_request:
+    types: [ 'opened', 'edited', 'synchronize']
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run chk againist'
+        default: master
 
 jobs:
-  mainchk:
+  chk:
     concurrency:
-      group:  ${{ github.workflow }}-${{ github.event.branch }}
+      group:  ${{ github.workflow }}-${{ github.event_name }}${{ github.event.pull_request.number }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
@@ -35,4 +40,3 @@ jobs:
     - name: Test
       run: |
         go test -v ./...
-
