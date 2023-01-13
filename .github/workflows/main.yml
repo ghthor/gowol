@@ -4,6 +4,7 @@ on:
     branches:
     # - some/pr/branch/for/testing
     - main
+    - master
 
 jobs:
   mainchk:
@@ -16,7 +17,21 @@ jobs:
       if: ${{ always() }}
       uses: actions/checkout@v3
 
-    - name: check code
+    - name: check env
       if: ${{ always() }}
       run: |
         set -x
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Build
+      run: |
+        go build -v ./...
+
+    - name: Test
+      run: |
+        go test -v ./...
+
